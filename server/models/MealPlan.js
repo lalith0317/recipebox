@@ -1,0 +1,19 @@
+const mongoose = require("mongoose");
+
+const mealPlanSchema = new mongoose.Schema({
+
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
+
+    day: String,
+
+    recipe: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Recipe"
+    }
+
+});
+
+module.exports = mongoose.model("MealPlan", mealPlanSchema);
