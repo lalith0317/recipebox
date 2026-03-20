@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5000/api"
+    baseURL: "https://recipebox-backend-kqlp.onrender.com/api"
 });
 
 export default API;
