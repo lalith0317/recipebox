@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { followUser, getUserProfile } = require("../controllers/userController");
+const { followUser, getUserProfile, updateProfile } = require("../controllers/userController");
 
 const upload = require("../middleware/upload");
 
