@@ -72,3 +72,28 @@ exports.getUserProfile = async (req,res)=>{
     }
 
 };
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const { name, bio } = req.body;
+
+        let updateData = { name, bio };
+
+        // if image uploaded
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path);
+            updateData.avatar = result.secure_url;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        );
+
+        res.json(updatedUser);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

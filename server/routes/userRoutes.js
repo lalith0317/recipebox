@@ -3,6 +3,9 @@ const router = express.Router();
 
 const { followUser, getUserProfile } = require("../controllers/userController");
 
+const upload = require("../middleware/upload");
+
+router.put("/:id", upload.single("avatar"), updateProfile);
 
 router.post("/:id/follow", followUser);
 
