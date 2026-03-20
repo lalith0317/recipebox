@@ -140,11 +140,17 @@ function Profile() {
                             formData.append("bio", bio);
                             if (avatar) formData.append("avatar", avatar);
 
-                            const res = await API.put(`/users/${user._id}`, formData);
+                            const res = await API.put(`/users/${user._id}`, formData, {
+                                headers: {
+                                    "Content-Type": "multipart/form-data"
+                                }
+                            });
 
                             setUser(res.data);
                             localStorage.setItem("user", JSON.stringify(res.data));
                             setEditing(false);
+
+                            alert("Profile updated successfully");
 
                         }}
                         style={{ ...btnStyle, marginTop: "10px" }}
@@ -229,7 +235,7 @@ function Profile() {
         </div>
         
     );
-    
+
 }
 
 const btnStyle = {

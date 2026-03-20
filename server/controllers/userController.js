@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Recipe = require("../models/Recipe");
+const cloudinary = require("../config/cloudinary");
 
 
 exports.followUser = async (req, res) => {
@@ -90,10 +91,12 @@ exports.updateProfile = async (req, res) => {
             updateData,
             { new: true }
         );
-
+        console.log("BODY:", req.body);
+        console.log("FILE:", req.file);
         res.json(updatedUser);
 
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
