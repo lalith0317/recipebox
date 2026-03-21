@@ -16,25 +16,22 @@ function Home() {
     }, [search, difficulty, maxTime, ingredient]);
 
     const fetchRecipes = async () => {
+        setLoading(true);
 
-        const res = await API.get("/recipes", {
-            params: {
-            search,
-            difficulty,
-            maxTime,
-            ingredient
-            }
-        });
+        try {
+            const res = await API.get("/recipes", {
+                params: { search, difficulty, maxTime, ingredient }
+            });
 
-        setRecipes(res.data);
+            setRecipes(res.data);
+
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong 😓"); // ✅ error handling
+        }
+
+        setLoading(false);
     };
-
-    const filteredRecipes = recipes.filter(recipe =>
-        recipe.title.toLowerCase().includes(search.toLowerCase()) ||
-        recipe.ingredients?.some(i =>
-            i.name.toLowerCase().includes(search.toLowerCase())
-        )
-    );
 
     return (
 
@@ -61,18 +58,8 @@ function Home() {
 
             </div>
 
-            <div style={{
-                display:"flex",
-                gap:"10px",
-                flexWrap:"wrap",
-                marginBottom:"20px"
-            }}>
-
-                <input
-                    placeholder="🔍 Search..."
-                    value={search}
-                    onChange={(e)=>setSearch(e.target.value)}
-                />
+            {/* 🔥 FILTER BAR */}
+            <div style={filterBarStyle}>
 
                 <select onChange={(e)=>setDifficulty(e.target.value)}>
                     <option value="">All Difficulty</option>
@@ -92,26 +79,36 @@ function Home() {
                     onChange={(e)=>setIngredient(e.target.value)}
                 />
 
-                </div>
+            </div>
 
             {/* RECIPES SECTION */}
             <div style={{ padding: "40px" }}>
-
-                {loading && (
-                    <p style={{ textAlign: "center" }}>Loading recipes...</p>
-                )}
 
                 <h2 style={{ textAlign: "center", marginBottom: "30px" }}>
                     Explore Recipes
                 </h2>
 
+                {/* ✅ LOADING */}
+                {loading && (
+                    <h3 style={{ textAlign: "center" }}>
+                        Loading recipes... 🍳
+                    </h3>
+                )}
+
+                {/* ❌ EMPTY STATE */}
+                {!loading && recipes.length === 0 && (
+                    <h3 style={{ textAlign: "center" }}>
+                        No recipes found 😢 Try different filters
+                    </h3>
+                )}
+
+                {/* 🍲 RECIPES */}
                 <div style={gridStyle}>
 
-                    {filteredRecipes.map(recipe => (
+                    {!loading && recipes.map(recipe => (
 
                         <div key={recipe._id} style={cardStyle}>
 
-                            {/* CLICKABLE CARD */}
                             <Link
                                 to={`/recipe/${recipe._id}`}
                                 style={{ textDecoration: "none", color: "inherit" }}
@@ -127,7 +124,6 @@ function Home() {
 
                                     <h3>{recipe.title}</h3>
 
-                                    {/* SAFE AUTHOR */}
                                     <p style={{ color: "#666" }}>
                                         By{" "}
                                         {recipe.author ? (
@@ -137,39 +133,23 @@ function Home() {
                                                     e.stopPropagation();
                                                     window.location.href = `/profile/${recipe.author._id}`;
                                                 }}
-                                                style={{
-                                                    color: "#ff6b3d",
-                                                    cursor: "pointer",
-                                                    fontWeight: "bold"
-                                                }}
+                                                style={authorStyle}
                                             >
                                                 {recipe.author.name}
                                             </span>
-                                        ) : (
-                                            "Unknown"
-                                        )}
+                                        ) : "Unknown"}
                                     </p>
 
                                     <p style={{ color: "#777", fontSize: "14px" }}>
                                         {recipe.description}
                                     </p>
 
-                                    <div style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        marginTop: "10px"
-                                    }}>
-
+                                    <div style={infoRowStyle}>
                                         <span>⭐ {recipe.avgRating || "0"}</span>
                                         <span>⏱ {recipe.cookingTime || "N/A"} min</span>
-
                                     </div>
 
-                                    <p style={{
-                                        marginTop: "8px",
-                                        fontWeight: "bold",
-                                        color: "#ff6b3d"
-                                    }}>
+                                    <p style={difficultyStyle}>
                                         🔥 {recipe.difficulty}
                                     </p>
 
@@ -186,7 +166,6 @@ function Home() {
             </div>
 
         </div>
-
     );
 }
 
@@ -212,6 +191,15 @@ const searchStyle = {
     fontSize: "14px"
 };
 
+const filterBarStyle = {
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
+    padding: "20px",
+    justifyContent: "center",
+    background: "#fff",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
+};
 
 const gridStyle = {
     display: "grid",
@@ -224,7 +212,6 @@ const cardStyle = {
     overflow: "hidden",
     background: "#fff",
     boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
-    transition: "transform 0.2s",
     cursor: "pointer"
 };
 
@@ -232,6 +219,24 @@ const imageStyle = {
     width: "100%",
     height: "180px",
     objectFit: "cover"
+};
+
+const authorStyle = {
+    color: "#ff6b3d",
+    cursor: "pointer",
+    fontWeight: "bold"
+};
+
+const infoRowStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "10px"
+};
+
+const difficultyStyle = {
+    marginTop: "8px",
+    fontWeight: "bold",
+    color: "#ff6b3d"
 };
 
 export default Home;
