@@ -7,21 +7,26 @@ function Home() {
     const [recipes, setRecipes] = useState([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
+    const [difficulty, setDifficulty] = useState("");
+    const [maxTime, setMaxTime] = useState("");
+    const [ingredient, setIngredient] = useState("");
 
     useEffect(() => {
         fetchRecipes();
-    }, []);
+    }, [search, difficulty, maxTime, ingredient]);
 
     const fetchRecipes = async () => {
-        try {
-            setLoading(true);
-            const res = await API.get("/recipes");
-            setRecipes(res.data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+
+        const res = await API.get("/recipes", {
+            params: {
+            search,
+            difficulty,
+            maxTime,
+            ingredient
+            }
+        });
+
+        setRecipes(res.data);
     };
 
     const filteredRecipes = recipes.filter(recipe =>
@@ -55,6 +60,39 @@ function Home() {
                 />
 
             </div>
+
+            <div style={{
+                display:"flex",
+                gap:"10px",
+                flexWrap:"wrap",
+                marginBottom:"20px"
+            }}>
+
+                <input
+                    placeholder="🔍 Search..."
+                    value={search}
+                    onChange={(e)=>setSearch(e.target.value)}
+                />
+
+                <select onChange={(e)=>setDifficulty(e.target.value)}>
+                    <option value="">All Difficulty</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                </select>
+
+                <input
+                    type="number"
+                    placeholder="⏱ Max Time"
+                    onChange={(e)=>setMaxTime(e.target.value)}
+                />
+
+                <input
+                    placeholder="🥦 Ingredient"
+                    onChange={(e)=>setIngredient(e.target.value)}
+                />
+
+                </div>
 
             {/* RECIPES SECTION */}
             <div style={{ padding: "40px" }}>
