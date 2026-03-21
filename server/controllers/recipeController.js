@@ -58,7 +58,7 @@ try {
         query.difficulty = difficulty;
     }
 
-    const recipes = await Recipe.find().populate("author", "name");
+    const recipes = await Recipe.find(query).populate("author", "name");
 
     const recipesWithRating = recipes.map((recipe) => {
 
